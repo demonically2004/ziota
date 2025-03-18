@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: black;
+    color: white;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+header {
+    width: 100%;
+    padding: 20px 0;
+    font-size: 28px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.welcome {
+    margin: 100px 0 20px;
+    font-size: 20px;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.get-started {
+    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: white;
+    color: black;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+.get-started:hover {
+    background: crimson;
+    color: white;
+}
+
+/* Main Content */
+.container {
+    margin-top: 80px;
+    padding: 20px;
+}
+
+.btn {
+    background: white;
+    color: black;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+.btn:hover {
+    background: crimson;
+    color: white;
+}
+
+#checker {
+    margin-top: 100px;
+}
+.modal, .input {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: black;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    width: 320px;
+    z-index: 1000;
+}
+
+.modal h2, .input h2 {
+    margin-bottom: 15px;
+}
+
+.modal button, .input button {
+    padding: 10px 20px;
+    border: none;
+    background: crimson;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.modal button:hover, .input button:hover {
+    background: black;
+}
+.input input {
+    width: 90%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.input .modal-btns {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+footer {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+}

@@ -1,0 +1,77 @@
+body {
+font-family: 'Arial', sans-serif;
+background: #1a1a1a; /* Blackish background */
+color: white;
+margin: 0;
+padding: 20px;
+}
+h1 {
+text-align: center;
+font-size: 2.5rem;
+margin-bottom: 20px;
+}
+.accordion {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 10px;
+margin-bottom: 10px;
+overflow: hidden;
+}
+.accordion-header {
+padding: 15px 20px;
+font-size: 1.4rem;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+transition: background 0.3s;
+}
+.accordion-header:hover {
+background: rgba(255, 255, 255, 0.2);
+}
+.accordion-header::after {
+content: '+';
+font-size: 1.5rem;
+transition: transform 0.3s;
+}
+.accordion-header.active::after {
+content: '-';
+}
+.accordion-content {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+.accordion-content.open {
+max-height: 500px; /* Adjust based on content */
+padding: 10px 20px;
+}
+.accordion-content ul {
+list-style-type: none;
+padding: 0;
+}
+.accordion-content ul li {
+margin: 10px 0;
+}
+.accordion-content ul li a {
+color: #00bcd4;
+text-decoration: none;
+transition: color 0.3s;
+}
+.accordion-content ul li a:hover {
+color: #ff4081;
+}
+.back-button {
+text-align: center;
+margin-top: 20px;
+}
+.back-button a {
+color: white;
+text-decoration: none;
+background: #00bcd4;
+padding: 10px 20px;
+border-radius: 5px;
+transition: background 0.3s;
+}
+.back-button a:hover {
+background: #ff4081;
+}
