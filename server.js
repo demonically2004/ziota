@@ -7,7 +7,7 @@ const cors = require("cors");
 const helmet = require("helmet"); // ✅ Security middleware
 const cloudinary = require("cloudinary").v2;
 const RedisStore = require("connect-redis").default;
-const redis = require("redis");
+
 
 const app = express();
 
@@ -32,10 +32,18 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     });
 
 // Create Redis client
+const { createClient } = require("redis");
+
 const redisClient = createClient({
-    url: process.env.REDIS_URL || "redis://localhost:6379",
+    url: process.env.REDIS_URL // Ensure you set REDIS_URL in Render environment variables
 });
-redisClient.connect().catch(console.error);
+
+redisClient.on("error", (err) => console.error("Redis Client Error", err));
+
+(async () => {
+    await redisClient.connect();
+    console.log("✅ Connected to Redis");
+})();
 
 // Configure session middleware with Redis
 app.use(session({
