@@ -7,7 +7,7 @@ const cors = require("cors");
 const helmet = require("helmet"); // ✅ Security middleware
 const cloudinary = require("cloudinary").v2;
 
-
+const path = require("path");
 
 const app = express();
 
@@ -84,9 +84,12 @@ app.get("/get-files", async (req, res) => {
     }
 });
 
-// ✅ Server Health Check Route
+// Serve static frontend files (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, "public")));
+
+// Route for home page
 app.get("/", (req, res) => {
-    res.send("🚀 Ziota API is Running!");
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ✅ CORS Security Headers for Embedding
