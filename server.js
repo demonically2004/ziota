@@ -8,7 +8,7 @@ const helmet = require("helmet"); // ✅ Security middleware
 const cloudinary = require("cloudinary").v2;
 
 const path = require("path");
-app.use(cors({ origin: "*" })); // Open access for all frontend requests
+
 
 const app = express();
 
