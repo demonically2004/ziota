@@ -95,7 +95,8 @@ app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
     next();
 });
+const PORT = process.env.PORT || 5000; // ✅ Use Render's PORT
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
 
-// ✅ Start the Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
