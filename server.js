@@ -6,6 +6,8 @@ const passport = require("passport");
 const cors = require("cors");
 const helmet = require("helmet"); // ✅ Security middleware
 const cloudinary = require("cloudinary").v2;
+const RedisStore = require("connect-redis").default;
+const redis = require("redis");
 
 const app = express();
 
@@ -29,14 +31,20 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
         process.exit(1);
     });
 
-// ✅ Session Middleware (OAuth Requires This First)
+// Create Redis client
+const redisClient = createClient({
+    url: process.env.REDIS_URL || "redis://localhost:6379",
+});
+redisClient.connect().catch(console.error);
+
+// Configure session middleware with Redis
 app.use(session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET || "supersecret",
     resave: false,
-    saveUninitialized: false, // ✅ Prevent unnecessary session storage
+    saveUninitialized: false,
     cookie: { secure: process.env.NODE_ENV === "production", httpOnly: true }
 }));
-
 // ✅ Passport Configuration
 require("./middleware/auth"); // Ensure Passport OAuth is configured
 app.use(passport.initialize());
