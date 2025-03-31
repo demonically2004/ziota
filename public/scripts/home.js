@@ -162,7 +162,19 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
         authMessage.innerText = "⚠️ Google Login Failed!";
     }
 });
+document.addEventListener("DOMContentLoaded", () => {
+    // Select the General Access button
+    const generalAccessBtn = document.getElementById("generalAccess");
 
+    // Redirect to general.html on click
+    if (generalAccessBtn) {
+        generalAccessBtn.addEventListener("click", () => {
+            window.location.href = "general.html"; // Redirect to general.html
+        });
+    } else {
+        console.error("❌ General Access button not found!");
+    }
+});
 // ✅ Sign Out
 signOutBtn.addEventListener("click", () => {
     signOut(auth)
