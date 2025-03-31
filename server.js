@@ -32,6 +32,13 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
     });
 
 // Create Redis client
+// ✅ Session Middleware (OAuth Requires This First)
+app.use(session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false, // ✅ Prevent unnecessary session storage
+    cookie: { secure: process.env.NODE_ENV === "production", httpOnly: true }
+}));
 
 // ✅ Passport Configuration
 require("./middleware/auth"); // Ensure Passport OAuth is configured
