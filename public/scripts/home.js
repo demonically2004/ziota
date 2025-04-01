@@ -165,16 +165,19 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
 document.addEventListener("DOMContentLoaded", () => {
     // Select the General Access button
     const generalAccessBtn = document.getElementById("generalAccess");
+    console.log(generalAccessBtn.innerHTML);
 
     // Redirect to general.html on click
     if (generalAccessBtn) {
         generalAccessBtn.addEventListener("click", () => {
+            console.log("General Access button clicked!");
             window.location.href = "general.html"; // Redirect to general.html
         });
     } else {
         console.error("❌ General Access button not found!");
     }
 });
+
 // ✅ Sign Out
 signOutBtn.addEventListener("click", () => {
     signOut(auth)
