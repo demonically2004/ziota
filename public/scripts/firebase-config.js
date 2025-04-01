@@ -1,7 +1,10 @@
 // Import Firebase modules from CDN
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+// import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getAnalytics } from "firebase/analytics"; 
+// import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+import { getAuth,  signInWithPopup, signOut } from "firebase/auth";
+import { GoogleAuthProvider } from "firebase/auth";
+import { initializeApp } from "firebase/app";
 //import { getFirestore } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
 // ✅ Correct Firebase Configuration
@@ -17,11 +20,11 @@ const firebaseConfig = {
 
 // ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 
 // ✅ Initialize Firebase Authentication
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-//const db = getFirestore(app);
+// const db = getFirestore(app);
 
 export { auth, provider, signInWithPopup, signOut};
