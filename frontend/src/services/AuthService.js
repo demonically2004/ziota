@@ -225,20 +225,35 @@ class AuthService {
     }
   }
 
-  // Get token
+  // Get token (prioritize JWT token for traditional login)
   getToken() {
     return localStorage.getItem('token');
   }
 
+  // Get the appropriate token for API calls
+  async getApiToken() {
+    // First check if we have a JWT token (from traditional login)
+    const jwtToken = this.getToken();
+    if (jwtToken) {
+      return jwtToken;
+    }
+
+    // If no JWT token, try to get Firebase token
+    return await this.getFirebaseToken();
+  }
+
   // Check if user is authenticated
   isAuthenticated() {
-    return !!auth.currentUser || !!this.getToken();
+    return !!this.getToken() || !!auth.currentUser;
   }
 
   // Check if user is authenticated (async version)
   async isAuthenticatedAsync() {
+    const jwtToken = this.getToken();
+    if (jwtToken) return true;
+
     const user = await this.waitForAuthReady();
-    return !!user || !!this.getToken();
+    return !!user;
   }
 }
 

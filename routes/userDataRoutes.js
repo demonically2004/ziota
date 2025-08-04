@@ -1,37 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/Users');
-const admin = require('../config/firebaseAdmin');
-
-// Middleware to verify Firebase token
-const verifyToken = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ success: false, error: 'No token provided' });
-    }
-
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    req.user = decodedToken;
-    next();
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ success: false, error: 'Invalid token' });
-  }
-};
+const unifiedAuth = require('../middleware/unifiedAuth');
 
 // Get user data
-router.get('/data', verifyToken, async (req, res) => {
+router.get('/data', unifiedAuth, async (req, res) => {
   try {
-    console.log('🔍 Getting user data for:', req.user.uid);
-    
-    const user = await User.findOne({ firebaseUID: req.user.uid });
-    
+    console.log('🔍 Getting user data for user ID:', req.user.userId);
+
+    const user = await User.findById(req.user.userId);
+
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
       });
     }
 
@@ -61,17 +43,17 @@ router.get('/data', verifyToken, async (req, res) => {
 });
 
 // Update user data
-router.put('/data', verifyToken, async (req, res) => {
+router.put('/data', unifiedAuth, async (req, res) => {
   try {
-    console.log('🔍 Updating user data for:', req.user.uid);
+    console.log('🔍 Updating user data for user ID:', req.user.userId);
     console.log('🔍 Data to update:', req.body);
-    
-    const user = await User.findOne({ firebaseUID: req.user.uid });
-    
+
+    const user = await User.findById(req.user.userId);
+
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
       });
     }
 
@@ -100,16 +82,16 @@ router.put('/data', verifyToken, async (req, res) => {
 });
 
 // Delete user images
-router.delete('/images', verifyToken, async (req, res) => {
+router.delete('/images', unifiedAuth, async (req, res) => {
   try {
-    console.log('🔍 Deleting all images for:', req.user.uid);
-    
-    const user = await User.findOne({ firebaseUID: req.user.uid });
-    
+    console.log('🔍 Deleting all images for user ID:', req.user.userId);
+
+    const user = await User.findById(req.user.userId);
+
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
       });
     }
 

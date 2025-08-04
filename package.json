@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "vercel-build": "echo 'Building server-side only'"
+    "vercel-build": "echo 'Skipping build step'"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

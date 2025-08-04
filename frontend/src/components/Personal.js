@@ -70,9 +70,9 @@ const Personal = () => {
   // Load saved data from backend
   const loadSavedData = async () => {
     try {
-      // Get fresh Firebase token (no localStorage)
-      const token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+      // Get appropriate token (JWT or Firebase)
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       if (!token) {
         console.error('❌ No valid token available');
@@ -209,9 +209,9 @@ const Personal = () => {
       console.log('🔄 Saving data to backend:', dataToUpdate);
       setIsSaving(true);
 
-      // Get fresh Firebase token (no localStorage)
-      const token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+      // Get appropriate token (JWT or Firebase)
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       if (!token) {
         console.error('❌ No valid token available for saving');
