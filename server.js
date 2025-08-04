@@ -30,7 +30,29 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); // Allow frontend requests
-app.use(helmet()); // ✅ Security Enhancements
+
+// ✅ Security Enhancements with CSP configuration
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            connectSrc: ["'self'", "https://*.vercel.app", "https://*.googleapis.com", "https://*.firebaseapp.com", "https://*.cloudinary.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://*.googleapis.com", "https://*.gstatic.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "https://*.cloudinary.com", "https://*.googleapis.com"],
+            manifestSrc: ["'self'"]
+        },
+    },
+    crossOriginEmbedderPolicy: false
+}));
+
+// ✅ Additional CORS Security Headers
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+    res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
+    next();
+});
 
 // ✅ Ensure MongoDB URI is Provided
 if (!process.env.MONGO_URI) {
@@ -186,12 +208,7 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// ✅ CORS Security Headers for Embedding
-app.use((req, res, next) => {
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-    res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
-    next();
-});
+
 // For local development
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
