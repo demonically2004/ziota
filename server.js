@@ -18,9 +18,11 @@ app.use(express.json()); // Parse JSON requests
 // ✅ CORS Configuration for React Frontend
 const corsOptions = {
     origin: [
-        'http://localhost:3000', // React development server
-        'http://localhost:3001', // Alternative React port
-        process.env.CLIENT_ORIGIN || 'http://localhost:3000'
+        'http://localhost:3000',
+        'http://localhost:3001',
+        process.env.CLIENT_ORIGIN || 'http://localhost:3000',
+        'https://ziota-datf03b4z-anxious2004s-projects.vercel.app',
+        /\.vercel\.app$/
     ],
     credentials: true, // Allow cookies and authentication headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -29,7 +31,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // Allow frontend requests
 app.use(helmet()); // ✅ Security Enhancements
-app.use(express.static("public")); // Serve frontend
+// Serve static files from the React frontend app
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'frontend/build')));
+    
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+        res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+    });
+}
 
 // ✅ Ensure MongoDB URI is Provided
 if (!process.env.MONGO_URI) {
@@ -181,8 +191,8 @@ app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
     next();
 });
-const PORT = process.env.PORT || 5000; // ✅ Use Render's PORT
-app.listen(PORT, "0.0.0.0", () => {
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
 
