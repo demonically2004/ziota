@@ -6,7 +6,7 @@ const passport = require("passport");
 const cors = require("cors");
 const helmet = require("helmet"); // ✅ Security middleware
 const cloudinary = require("cloudinary").v2;
-
+const fs = require("fs");
 const path = require("path");
 
 
@@ -14,7 +14,20 @@ const app = express();
 
 // ✅ Middleware
 app.use(express.json()); // Parse JSON requests
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || "*" })); // Allow frontend requests
+
+// ✅ CORS Configuration for React Frontend
+const corsOptions = {
+    origin: [
+        'http://localhost:3000', // React development server
+        'http://localhost:3001', // Alternative React port
+        process.env.CLIENT_ORIGIN || 'http://localhost:3000'
+    ],
+    credentials: true, // Allow cookies and authentication headers
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
+app.use(cors(corsOptions)); // Allow frontend requests
 app.use(helmet()); // ✅ Security Enhancements
 app.use(express.static("public")); // Serve frontend
 
@@ -49,9 +62,13 @@ app.use(passport.session());
 // ✅ Import Routes
 const authRoutes = require("./routes/authRoutes");
 const courseRoutes = require("./routes/courses");
+const userDataRoutes = require("./routes/userDataRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/user", userDataRoutes);
+app.use("/api/user/subject", subjectRoutes);
 
 // ✅ Cloudinary Configuration
 cloudinary.config({
@@ -60,37 +77,102 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET,
 });
 
-// ✅ Sample File Storage (For Testing Cloudinary)
+// ✅ Sample File Storage (Local file paths)
 const FILES = {
-    java_notes: "https://res.cloudinary.com/dlcujlif7/raw/upload/v1742904097/Exp6_aj2fjl.docx",
-    java_books: "cse_core/java_books.pdf",
-    python_notes: "cse_core/python_notes.pdf",
+    java_notes: {
+        path: path.join(__dirname, 'public', 'files', 'cse_core', 'Exp6_aj2fjl.docx'),
+        name: 'Java_Notes.docx',
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    },
+    java_books: {
+        path: path.join(__dirname, 'public', 'files', 'cse_core', 'exp5_ansh.pdf'),
+        name: 'Java_Books.pdf',
+        type: 'application/pdf'
+    },
+    python_notes: {
+        path: path.join(__dirname, 'public', 'files', 'cse_core', 'exp5_ansh.pdf'),
+        name: 'Python_Notes.pdf',
+        type: 'application/pdf'
+    }
 };
 
-// ✅ API to Fetch Cloudinary File URLs
+// ✅ API to Fetch File URLs (Local file serving)
 app.get("/get-files", async (req, res) => {
     try {
+        // Set CORS headers for file downloads
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
         let fileLinks = {};
         for (const key in FILES) {
             if (!FILES[key]) {
-                return res.status(404).json({ error: `File ${key} not found in Cloudinary` });
+                return res.status(404).json({ error: `File ${key} not found` });
             }
-            const cloudinaryUrl = cloudinary.url(FILES[key], { secure: true });
-            fileLinks[key] = cloudinaryUrl;
+            // Return local download URLs
+            fileLinks[key] = `${req.protocol}://${req.get('host')}/download-file/${key}`;
         }
         res.json(fileLinks);
     } catch (error) {
-        console.error("❌ Cloudinary Fetch Error:", error);
+        console.error("❌ File Fetch Error:", error);
         res.status(500).json({ error: "Server error while fetching files" });
     }
 });
 
-// Serve static frontend files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, "public")));
+// ✅ Local file download endpoint
+app.get("/download-file/:fileKey", async (req, res) => {
+    try {
+        const fileKey = req.params.fileKey;
+        const fileConfig = FILES[fileKey];
 
-// Route for home page
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "home.html"));
+        if (!fileConfig) {
+            return res.status(404).json({ error: `File ${fileKey} not found` });
+        }
+
+        console.log(`📥 Serving local file: ${fileKey} from ${fileConfig.path}`);
+
+        // Check if file exists
+        if (!fs.existsSync(fileConfig.path)) {
+            console.error(`❌ File not found on disk: ${fileConfig.path}`);
+            return res.status(404).json({ error: `File ${fileKey} not found on server` });
+        }
+
+        // Set proper headers for file download
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.header('Content-Type', fileConfig.type);
+        res.header('Content-Disposition', `attachment; filename="${fileConfig.name}"`);
+
+        // Stream the file
+        const fileStream = fs.createReadStream(fileConfig.path);
+
+        fileStream.on('error', (error) => {
+            console.error(`❌ Error reading file ${fileConfig.path}:`, error);
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Error reading file' });
+            }
+        });
+
+        fileStream.pipe(res);
+
+        console.log(`✅ File ${fileKey} served successfully`);
+
+    } catch (error) {
+        console.error("❌ Download error:", error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: "Server error while downloading file" });
+        }
+    }
+});
+
+// ✅ API Health Check Route
+app.get("/api/health", (req, res) => {
+    res.json({
+        status: "OK",
+        message: "Ziota Backend API is running",
+        timestamp: new Date().toISOString()
+    });
 });
 
 // ✅ CORS Security Headers for Embedding
