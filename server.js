@@ -97,10 +97,23 @@ app.use("/api/user/subject", subjectRoutes);
 
 // ✅ Serve static files from the React frontend app (AFTER API routes)
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'frontend/build')));
+    // Serve static files with proper headers
+    app.use(express.static(path.join(__dirname, 'frontend/build'), {
+        setHeaders: (res, path) => {
+            if (path.endsWith('.js')) {
+                res.setHeader('Content-Type', 'application/javascript');
+            } else if (path.endsWith('.css')) {
+                res.setHeader('Content-Type', 'text/css');
+            }
+        }
+    }));
 
-    // Handle React routing, return all requests to React app
+    // Handle React routing, return all non-API requests to React app
     app.get('*', function(req, res) {
+        // Don't serve index.html for API routes or static files
+        if (req.path.startsWith('/api/') || req.path.startsWith('/auth/') || req.path.includes('.')) {
+            return res.status(404).send('Not Found');
+        }
         res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
     });
 }
