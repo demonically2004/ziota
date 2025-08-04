@@ -22,6 +22,8 @@ const corsOptions = {
         'http://localhost:3001',
         process.env.CLIENT_ORIGIN || 'http://localhost:3000',
         'https://ziota-datf03b4z-anxious2004s-projects.vercel.app',
+        'https://zio-one.vercel.app',
+        'https://zio.vercel.app',
         /\.vercel\.app$/
     ],
     credentials: true, // Allow cookies and authentication headers
