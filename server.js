@@ -47,8 +47,8 @@ if (!process.env.MONGO_URI) {
     process.exit(1);
 }
 
-// ✅ Connect to MongoDB (Removed Duplicate Call)
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// ✅ Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected"))
     .catch(err => {
         console.error("❌ MongoDB Connection Failed:", err.message);
@@ -191,8 +191,14 @@ app.use((req, res, next) => {
     res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
     next();
 });
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+}
+
+// Export for Vercel
+module.exports = app;
 
