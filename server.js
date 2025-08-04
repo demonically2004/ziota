@@ -31,15 +31,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // Allow frontend requests
 app.use(helmet()); // ✅ Security Enhancements
-// Serve static files from the React frontend app
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'frontend/build')));
-    
-    // Handle React routing, return all requests to React app
-    app.get('*', function(req, res) {
-        res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
-    });
-}
 
 // ✅ Ensure MongoDB URI is Provided
 if (!process.env.MONGO_URI) {
@@ -79,6 +70,16 @@ app.use("/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/user", userDataRoutes);
 app.use("/api/user/subject", subjectRoutes);
+
+// ✅ Serve static files from the React frontend app (AFTER API routes)
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+        res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+    });
+}
 
 // ✅ Cloudinary Configuration
 cloudinary.config({
