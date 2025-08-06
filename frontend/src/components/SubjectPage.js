@@ -58,25 +58,6 @@ const SubjectPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Check authentication
-    if (!AuthService.isAuthenticated()) {
-      navigate('/login');
-      return;
-    }
-
-    const currentUser = AuthService.getCurrentUser();
-    setUser(currentUser);
-    loadSubjectData();
-
-    // Test Cloudinary connection
-    testCloudinaryConnection();
-  }, [subjectId, navigate, loadSubjectData, testCloudinaryConnection]);
-
-
-
-
-
   // Load subject data from backend
   const loadSubjectData = useCallback(async () => {
     try {
@@ -105,7 +86,7 @@ const SubjectPage = () => {
         }
         return;
       }
-      
+
       const response = await axios.get(`${API_BASE_URL}/api/user/subject/${subjectId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -136,6 +117,26 @@ const SubjectPage = () => {
       setFiles([]);
     }
   }, [subjectId]);
+
+  useEffect(() => {
+    // Check authentication
+    if (!AuthService.isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+
+    const currentUser = AuthService.getCurrentUser();
+    setUser(currentUser);
+    loadSubjectData();
+
+    // Test Cloudinary connection
+    testCloudinaryConnection();
+  }, [subjectId, navigate, loadSubjectData, testCloudinaryConnection]);
+
+
+
+
+
 
   // Save data to backend
   const saveSubjectData = async (dataToUpdate) => {
