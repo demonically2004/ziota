@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 import axios from 'axios';
@@ -97,7 +97,7 @@ const General = () => {
     }
   ]);
   // Load subjects from backend or localStorage
-  const loadSubjects = useCallback(async () => {
+  const loadSubjects = async () => {
     try {
       // First try to load from localStorage for admin-added subjects
       const savedSubjects = localStorage.getItem('generalSubjects');
@@ -140,7 +140,7 @@ const General = () => {
       console.error('❌ Error loading subjects:', error);
       // Keep default subjects if loading fails
     }
-  }, [subjects]);
+  };
 
   // Save subjects to backend and localStorage
   const saveSubjects = async (updatedSubjects) => {
@@ -186,7 +186,7 @@ const General = () => {
 
     // Load subjects from backend/localStorage
     loadSubjects();
-  }, [loadSubjects]);
+  }, []);
 
   // Admin authentication
   const handleAdminLogin = () => {

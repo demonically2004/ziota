@@ -23,7 +23,6 @@ const corsOptions = {
         process.env.CLIENT_ORIGIN || 'http://localhost:3000',
         'https://ziota-datf03b4z-anxious2004s-projects.vercel.app',
         'https://zio-one.vercel.app',
-        'https://zio1.vercel.app',
         'https://zio.vercel.app',
         /\.vercel\.app$/
     ],
@@ -98,60 +97,24 @@ app.use("/api/user/subject", subjectRoutes);
 
 // ✅ Serve static files from the React frontend app (AFTER API routes)
 if (process.env.NODE_ENV === 'production') {
-    const buildPath = path.join(__dirname, 'frontend/build');
-    console.log('🔍 Checking build directory:', buildPath);
-
-    // Check if build directory exists
-    const fs = require('fs');
-    if (fs.existsSync(buildPath)) {
-        console.log('✅ Build directory exists');
-        const files = fs.readdirSync(buildPath);
-        console.log('📁 Build directory contents:', files);
-
-        // Check static directory
-        const staticPath = path.join(buildPath, 'static');
-        if (fs.existsSync(staticPath)) {
-            console.log('✅ Static directory exists');
-            const staticFiles = fs.readdirSync(staticPath);
-            console.log('📁 Static directory contents:', staticFiles);
-        } else {
-            console.log('❌ Static directory missing');
-        }
-    } else {
-        console.log('❌ Build directory does not exist');
-    }
-
     // Serve static files with proper headers
-    app.use(express.static(buildPath, {
-        maxAge: '1d',
-        setHeaders: (res, filePath) => {
-            console.log('📄 Serving static file:', filePath);
-            if (filePath.endsWith('.js')) {
+    app.use(express.static(path.join(__dirname, 'frontend/build'), {
+        setHeaders: (res, path) => {
+            if (path.endsWith('.js')) {
                 res.setHeader('Content-Type', 'application/javascript');
-            } else if (filePath.endsWith('.css')) {
+            } else if (path.endsWith('.css')) {
                 res.setHeader('Content-Type', 'text/css');
-            } else if (filePath.endsWith('.html')) {
-                res.setHeader('Content-Type', 'text/html');
             }
         }
     }));
 
-    console.log('✅ Static files configured for production from:', buildPath);
-
     // Handle React routing, return all non-API requests to React app
     app.get('*', function(req, res) {
-        console.log('🔍 Catch-all route hit:', req.path);
-
-        // Don't serve index.html for API routes
-        if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) {
-            console.log('❌ API route not found:', req.path);
+        // Don't serve index.html for API routes or static files
+        if (req.path.startsWith('/api/') || req.path.startsWith('/auth/') || req.path.includes('.')) {
             return res.status(404).send('Not Found');
         }
-
-        // For all other routes (including React routes), serve index.html
-        const indexPath = path.join(__dirname, 'frontend/build', 'index.html');
-        console.log('📄 Serving index.html for:', req.path, 'from:', indexPath);
-        res.sendFile(indexPath);
+        res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
     });
 }
 
@@ -256,12 +219,7 @@ app.get("/api/health", (req, res) => {
     res.json({
         status: "OK",
         message: "Ziota Backend API is running",
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development',
-        hasMongoUri: !!process.env.MONGO_URI,
-        hasJwtSecret: !!process.env.JWT_SECRET,
-        hasCloudinary: !!(process.env.CLOUD_NAME && process.env.CLOUD_API_KEY),
-        hasFirebase: !!process.env.FIREBASE_PROJECT_ID
+        timestamp: new Date().toISOString()
     });
 });
 
