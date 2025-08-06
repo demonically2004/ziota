@@ -186,7 +186,7 @@ const General = () => {
 
     // Load subjects from backend/localStorage
     loadSubjects();
-  }, []);
+  }, [loadSubjects]);
 
   // Admin authentication
   const handleAdminLogin = () => {

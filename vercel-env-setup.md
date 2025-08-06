@@ -16,7 +16,7 @@ You need to add these environment variables in your Vercel project settings:
 
 #### **Frontend Variables (for React app):**
 ```
-REACT_APP_API_URL = https://zio-git-main-ansh-sharmas-projects-59cc301d.vercel.app
+REACT_APP_API_URL = https://zio-one.vercel.app
 REACT_APP_FIREBASE_API_KEY = AIzaSyBa-3Urpfzq-RN66bxwAcqr0v5DoRl3MaE
 REACT_APP_FIREBASE_AUTH_DOMAIN = ziota-aa366.firebaseapp.com
 REACT_APP_FIREBASE_PROJECT_ID = ziota-aa366

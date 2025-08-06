@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 import axios from 'axios';
@@ -21,7 +21,7 @@ const SubjectPage = () => {
   const CLOUDINARY_UPLOAD_PRESET = "personal_space";
 
   // Test Cloudinary connection and upload preset
-  const testCloudinaryConnection = async () => {
+  const testCloudinaryConnection = useCallback(async () => {
     console.log('🧪 Testing Cloudinary upload capabilities...');
 
     // Test different resource types
@@ -56,7 +56,7 @@ const SubjectPage = () => {
         console.log(`🧪 ${test.name} (${test.type}): ERROR -`, error.message);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Check authentication
@@ -71,14 +71,14 @@ const SubjectPage = () => {
 
     // Test Cloudinary connection
     testCloudinaryConnection();
-  }, [subjectId, navigate]);
+  }, [subjectId, navigate, loadSubjectData, testCloudinaryConnection]);
 
 
 
 
 
   // Load subject data from backend
-  const loadSubjectData = async () => {
+  const loadSubjectData = useCallback(async () => {
     try {
       const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -135,7 +135,7 @@ const SubjectPage = () => {
       }
       setFiles([]);
     }
-  };
+  }, [subjectId]);
 
   // Save data to backend
   const saveSubjectData = async (dataToUpdate) => {
