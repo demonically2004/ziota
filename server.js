@@ -98,10 +98,34 @@ app.use("/api/user/subject", subjectRoutes);
 
 // ✅ Serve static files from the React frontend app (AFTER API routes)
 if (process.env.NODE_ENV === 'production') {
-    // Serve static files with proper headers and longer cache
-    app.use(express.static(path.join(__dirname, 'frontend/build'), {
+    const buildPath = path.join(__dirname, 'frontend/build');
+    console.log('🔍 Checking build directory:', buildPath);
+
+    // Check if build directory exists
+    const fs = require('fs');
+    if (fs.existsSync(buildPath)) {
+        console.log('✅ Build directory exists');
+        const files = fs.readdirSync(buildPath);
+        console.log('📁 Build directory contents:', files);
+
+        // Check static directory
+        const staticPath = path.join(buildPath, 'static');
+        if (fs.existsSync(staticPath)) {
+            console.log('✅ Static directory exists');
+            const staticFiles = fs.readdirSync(staticPath);
+            console.log('📁 Static directory contents:', staticFiles);
+        } else {
+            console.log('❌ Static directory missing');
+        }
+    } else {
+        console.log('❌ Build directory does not exist');
+    }
+
+    // Serve static files with proper headers
+    app.use(express.static(buildPath, {
         maxAge: '1d',
         setHeaders: (res, filePath) => {
+            console.log('📄 Serving static file:', filePath);
             if (filePath.endsWith('.js')) {
                 res.setHeader('Content-Type', 'application/javascript');
             } else if (filePath.endsWith('.css')) {
@@ -112,7 +136,7 @@ if (process.env.NODE_ENV === 'production') {
         }
     }));
 
-    console.log('✅ Static files configured for production from:', path.join(__dirname, 'frontend/build'));
+    console.log('✅ Static files configured for production from:', buildPath);
 
     // Handle React routing, return all non-API requests to React app
     app.get('*', function(req, res) {
