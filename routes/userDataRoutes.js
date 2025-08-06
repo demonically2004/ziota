@@ -24,6 +24,7 @@ router.get('/data', unifiedAuth, async (req, res) => {
         ANN: '', Python: '', Java: '', AI: '', Statistics: '', WT: ''
       },
       subjects: user.subjects || [],
+      subjectFiles: user.subjectFiles || {},
       images: user.images || [],
       savedFiles: user.savedFiles || [],
       isDarkMode: user.isDarkMode || false
@@ -58,7 +59,7 @@ router.put('/data', unifiedAuth, async (req, res) => {
     }
 
     // Update only the provided fields
-    const allowedFields = ['generalNotes', 'subjectNotes', 'subjects', 'images', 'savedFiles', 'isDarkMode'];
+    const allowedFields = ['generalNotes', 'subjectNotes', 'subjects', 'subjectFiles', 'images', 'savedFiles', 'isDarkMode'];
     
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {

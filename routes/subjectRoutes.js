@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/Users');
-const verifyToken = require('../middleware/verifyToken');
+const unifiedAuth = require('../middleware/unifiedAuth');
 
 // Get subject data for a specific subject
-router.get('/:subjectId', verifyToken, async (req, res) => {
+router.get('/:subjectId', unifiedAuth, async (req, res) => {
   try {
     const { subjectId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.userId;
 
-    console.log(`🔍 Getting subject data for user: ${userId}, subject: ${subjectId}`);
+    console.log(`🔍 Getting subject data for user ID: ${userId}, subject: ${subjectId}`);
 
-    const user = await User.findOne({ firebaseUID: userId });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ 
         success: false, 
@@ -55,15 +55,15 @@ router.get('/:subjectId', verifyToken, async (req, res) => {
 });
 
 // Update subject data for a specific subject
-router.put('/:subjectId', verifyToken, async (req, res) => {
+router.put('/:subjectId', unifiedAuth, async (req, res) => {
   try {
     const { subjectId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.userId;
     const updateData = req.body;
 
-    console.log(`💾 Updating subject data for user: ${userId}, subject: ${subjectId}`);
+    console.log(`💾 Updating subject data for user ID: ${userId}, subject: ${subjectId}`);
 
-    const user = await User.findOne({ firebaseUID: userId });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ 
         success: false, 
@@ -119,14 +119,14 @@ router.put('/:subjectId', verifyToken, async (req, res) => {
 });
 
 // Delete a specific file from a subject
-router.delete('/:subjectId/files/:fileId', verifyToken, async (req, res) => {
+router.delete('/:subjectId/files/:fileId', unifiedAuth, async (req, res) => {
   try {
     const { subjectId, fileId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.userId;
 
-    console.log(`🗑️ Deleting file ${fileId} from subject ${subjectId} for user: ${userId}`);
+    console.log(`🗑️ Deleting file ${fileId} from subject ${subjectId} for user ID: ${userId}`);
 
-    const user = await User.findOne({ firebaseUID: userId });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ 
         success: false, 
@@ -166,13 +166,13 @@ router.delete('/:subjectId/files/:fileId', verifyToken, async (req, res) => {
 });
 
 // Get all files across all subjects for a user
-router.get('/files/all', verifyToken, async (req, res) => {
+router.get('/files/all', unifiedAuth, async (req, res) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.user.userId;
 
-    console.log(`📁 Getting all files for user: ${userId}`);
+    console.log(`📁 Getting all files for user ID: ${userId}`);
 
-    const user = await User.findOne({ firebaseUID: userId });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ 
         success: false, 

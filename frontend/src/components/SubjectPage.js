@@ -80,15 +80,8 @@ const SubjectPage = () => {
   // Load subject data from backend
   const loadSubjectData = async () => {
     try {
-      let token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
-
-      // If Firebase token is not available, try localStorage token as fallback
-      if (!token) {
-        console.log('🔄 Firebase token not available, trying localStorage token...');
-        token = AuthService.getToken();
-        console.log('🔍 localStorage token:', token ? 'Found' : 'Not found');
-      }
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       console.log('🔍 Using token for API call:', token ? `${token.substring(0, 20)}...` : 'No token');
 
@@ -148,8 +141,8 @@ const SubjectPage = () => {
   const saveSubjectData = async (dataToUpdate) => {
     try {
       setIsSaving(true);
-      const token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+      const token = await AuthService.getApiToken();
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       if (!token) {
         console.error('❌ No valid token available for saving');
@@ -296,29 +289,55 @@ const SubjectPage = () => {
     const newFiles = [...files];
     console.log('📁 Current files array:', newFiles.length, 'files');
 
+    let successCount = 0;
+    let failCount = 0;
+
     for (const file of selectedFiles) {
-      console.log('📄 Processing file:', file.name, 'Type:', file.type, 'Size:', file.size);
-      const uploadResult = await uploadToCloudinary(file);
-      if (uploadResult) {
-        const fileData = {
-          id: Date.now() + Math.random(),
-          name: uploadResult.originalName,
-          url: uploadResult.url,
-          publicId: uploadResult.publicId,
-          type: uploadResult.fileType,
-          size: uploadResult.fileSize,
-          uploadDate: new Date().toISOString()
-        };
-        console.log('✅ File processed successfully:', fileData);
-        newFiles.push(fileData);
-      } else {
-        console.error('❌ Failed to upload file:', file.name);
+      try {
+        console.log('📄 Processing file:', file.name, 'Type:', file.type, 'Size:', file.size);
+        const uploadResult = await uploadToCloudinary(file);
+        if (uploadResult) {
+          const fileData = {
+            id: Date.now() + Math.random(),
+            name: uploadResult.originalName,
+            url: uploadResult.url,
+            publicId: uploadResult.publicId,
+            type: uploadResult.fileType,
+            size: uploadResult.fileSize,
+            uploadDate: new Date().toISOString()
+          };
+          console.log('✅ File processed successfully:', fileData);
+          newFiles.push(fileData);
+          successCount++;
+        } else {
+          console.error('❌ Failed to upload file:', file.name);
+          failCount++;
+        }
+      } catch (error) {
+        console.error('❌ Error processing file:', file.name, error);
+        failCount++;
       }
     }
 
+    console.log(`📊 Upload summary: ${successCount} successful, ${failCount} failed`);
     console.log('💾 Saving', newFiles.length, 'files to backend');
-    setFiles(newFiles);
-    await saveSubjectData({ files: newFiles });
+
+    try {
+      setFiles(newFiles);
+      await saveSubjectData({ files: newFiles });
+      console.log('✅ Files saved to backend successfully');
+
+      // Show success message
+      if (successCount > 0) {
+        alert(`✅ Successfully uploaded ${successCount} file(s)${failCount > 0 ? ` (${failCount} failed)` : ''}`);
+      } else if (failCount > 0) {
+        alert(`❌ Failed to upload ${failCount} file(s). Please try again.`);
+      }
+    } catch (error) {
+      console.error('❌ Failed to save files to backend:', error);
+      alert('❌ Files uploaded to Cloudinary but failed to save to database. Please refresh and try again.');
+    }
+
     setIsUploading(false);
   };
 
@@ -407,6 +426,23 @@ const SubjectPage = () => {
   // Delete file
   const deleteFile = async (fileId) => {
     if (window.confirm('Are you sure you want to delete this file?')) {
+      try {
+        const token = await AuthService.getApiToken();
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
+        if (token) {
+          // Try to delete from backend first
+          await axios.delete(`${API_BASE_URL}/api/user/subject/${subjectId}/files/${fileId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          console.log('✅ File deleted from backend');
+        }
+      } catch (error) {
+        console.error('❌ Failed to delete file from backend:', error);
+        // Continue with local deletion even if backend fails
+      }
+
+      // Update local state
       const updatedFiles = files.filter(file => file.id !== fileId);
       setFiles(updatedFiles);
       await saveSubjectData({ files: updatedFiles });
