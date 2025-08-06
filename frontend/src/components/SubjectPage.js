@@ -64,7 +64,11 @@ const SubjectPage = () => {
       const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
+      console.log('🔍 API_BASE_URL:', API_BASE_URL);
+      console.log('🔍 Environment:', process.env.NODE_ENV);
       console.log('🔍 Using token for API call:', token ? `${token.substring(0, 20)}...` : 'No token');
+      console.log('🔍 AuthService.isAuthenticated():', AuthService.isAuthenticated());
+      console.log('🔍 localStorage token:', localStorage.getItem('token') ? 'Present' : 'Missing');
 
       if (!token) {
         console.error('❌ No valid token available');
@@ -145,8 +149,13 @@ const SubjectPage = () => {
       const token = await AuthService.getApiToken();
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
+      console.log('💾 Save API_BASE_URL:', API_BASE_URL);
+      console.log('💾 Save token available:', !!token);
+
       if (!token) {
         console.error('❌ No valid token available for saving');
+        console.error('❌ JWT Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+        console.error('❌ Firebase User:', AuthService.getCurrentUser() ? 'Present' : 'Missing');
         return;
       }
 
