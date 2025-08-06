@@ -98,24 +98,36 @@ app.use("/api/user/subject", subjectRoutes);
 
 // ✅ Serve static files from the React frontend app (AFTER API routes)
 if (process.env.NODE_ENV === 'production') {
-    // Serve static files with proper headers
+    // Serve static files with proper headers and longer cache
     app.use(express.static(path.join(__dirname, 'frontend/build'), {
-        setHeaders: (res, path) => {
-            if (path.endsWith('.js')) {
+        maxAge: '1d',
+        setHeaders: (res, filePath) => {
+            if (filePath.endsWith('.js')) {
                 res.setHeader('Content-Type', 'application/javascript');
-            } else if (path.endsWith('.css')) {
+            } else if (filePath.endsWith('.css')) {
                 res.setHeader('Content-Type', 'text/css');
+            } else if (filePath.endsWith('.html')) {
+                res.setHeader('Content-Type', 'text/html');
             }
         }
     }));
 
+    console.log('✅ Static files configured for production from:', path.join(__dirname, 'frontend/build'));
+
     // Handle React routing, return all non-API requests to React app
     app.get('*', function(req, res) {
-        // Don't serve index.html for API routes or static files
-        if (req.path.startsWith('/api/') || req.path.startsWith('/auth/') || req.path.includes('.')) {
+        console.log('🔍 Catch-all route hit:', req.path);
+
+        // Don't serve index.html for API routes
+        if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) {
+            console.log('❌ API route not found:', req.path);
             return res.status(404).send('Not Found');
         }
-        res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+
+        // For all other routes (including React routes), serve index.html
+        const indexPath = path.join(__dirname, 'frontend/build', 'index.html');
+        console.log('📄 Serving index.html for:', req.path, 'from:', indexPath);
+        res.sendFile(indexPath);
     });
 }
 
