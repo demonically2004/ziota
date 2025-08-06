@@ -3,10 +3,7 @@
   "builds": [
     {
       "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["frontend/build/**", "config/**", "models/**", "routes/**", "middleware/**"]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -23,6 +20,5 @@
       "dest": "/server.js"
     }
   ],
-  "installCommand": "npm install && cd frontend && npm install && npm run build && cd ..",
-  "buildCommand": "echo 'Build completed'"
+  "installCommand": "npm install && cd frontend && npm install && npm run build"
 }
