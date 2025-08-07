@@ -143,29 +143,7 @@ const Home = () => {
     }
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const handleGoogleLogin = async () => {
-    try {
-      console.log('🔍 Home: Starting Google login...');
-      setAuthMessage('🔄 Signing in with Google...');
 
-      const result = await AuthService.googleLogin();
-      console.log('🔍 Home: Google login result:', result);
-
-      if (result.success) {
-        setAuthMessage(`✅ Welcome, ${result.user.displayName}!`);
-        setTimeout(() => {
-          navigate('/personal');
-        }, 1500);
-      } else {
-        console.error('❌ Home: Google login failed:', result.message);
-        setAuthMessage(`⚠️ Google Login Failed: ${result.message}`);
-      }
-    } catch (error) {
-      console.error('❌ Home: Google login error:', error);
-      setAuthMessage(`⚠️ Google Login Failed: ${error.message}`);
-    }
-  };
 
   return (
     <div className="home-container">
