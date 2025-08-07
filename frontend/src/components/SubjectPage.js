@@ -71,6 +71,7 @@ const SubjectPage = () => {
 
     // Test Cloudinary connection
     testCloudinaryConnection();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subjectId, navigate]);
 
 

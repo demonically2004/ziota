@@ -143,6 +143,7 @@ const Home = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleGoogleLogin = async () => {
     try {
       console.log('🔍 Home: Starting Google login...');
@@ -288,7 +289,7 @@ const Home = () => {
                 {isLoading ? 'Logging in...' : 'Let Me In! 🚀'}
               </button>
               <p>
-                New to the squad? <a href="#" onClick={showRegister}>Join Us Here! ✨</a>
+                New to the squad? <button type="button" className="link-button" onClick={showRegister}>Join Us Here! ✨</button>
               </p>
             </form>
           )}
@@ -333,7 +334,7 @@ const Home = () => {
                 {isLoading ? 'Joining...' : 'Join Now! 🚀'}
               </button>
               <p>
-                Already part of the squad? <a href="#" onClick={showLogin}>Login Here! ✨</a>
+                Already part of the squad? <button type="button" className="link-button" onClick={showLogin}>Login Here! ✨</button>
               </p>
             </form>
           )}
@@ -399,7 +400,7 @@ const Home = () => {
               <a href="https://www.instagram.com/techshuttlebvp/" className="social-btn instagram">
                 <FontAwesomeIcon icon={faInstagram} />
               </a>
-              <a href="#" className="social-btn linkedin">
+              <a href="https://linkedin.com" className="social-btn linkedin">
                 <FontAwesomeIcon icon={faLinkedinIn} />
               </a>
               <a href="https://x.com/XllAnsh" className="social-btn twitter">
@@ -419,10 +420,10 @@ const Home = () => {
           <div className="footer-column">
             <h3>Resources</h3>
             <ul className="footer-links">
-              <li><a href="#"><FontAwesomeIcon icon={faBook} /> Study Materials</a></li>
-              <li><a href="#"><FontAwesomeIcon icon={faQuestionCircle} /> Practice Tests</a></li>
-              <li><a href="#"><FontAwesomeIcon icon={faCalendar} /> Study Planners</a></li>
-              <li><a href="#"><FontAwesomeIcon icon={faHeadset} /> Expert Support</a></li>
+              <li><button type="button" className="link-button"><FontAwesomeIcon icon={faBook} /> Study Materials</button></li>
+              <li><button type="button" className="link-button"><FontAwesomeIcon icon={faQuestionCircle} /> Practice Tests</button></li>
+              <li><button type="button" className="link-button"><FontAwesomeIcon icon={faCalendar} /> Study Planners</button></li>
+              <li><button type="button" className="link-button"><FontAwesomeIcon icon={faHeadset} /> Expert Support</button></li>
             </ul>
           </div>
           <div className="footer-column">

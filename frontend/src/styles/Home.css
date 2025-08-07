@@ -737,6 +737,29 @@ footer {
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Link Button Styles */
+.link-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.link-button:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.link-button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .menu-icon {

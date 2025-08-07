@@ -186,6 +186,7 @@ const General = () => {
 
     // Load subjects from backend/localStorage
     loadSubjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Admin authentication
