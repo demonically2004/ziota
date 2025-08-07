@@ -110,7 +110,7 @@ const General = () => {
       // If user is authenticated, try to load from backend
       const token = await AuthService.getFirebaseToken();
       if (token) {
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
         const response = await axios.get(`${API_BASE_URL}/api/user/data`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -151,7 +151,7 @@ const General = () => {
       // Try to save to backend if user is authenticated
       const token = await AuthService.getFirebaseToken();
       if (token) {
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
         // Extract just the subject info (without theory/lab data)
         const subjectsToSave = updatedSubjects.map(subject => ({

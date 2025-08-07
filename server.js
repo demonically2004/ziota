@@ -24,11 +24,15 @@ const corsOptions = {
         'https://ziota-datf03b4z-anxious2004s-projects.vercel.app',
         'https://zio-one.vercel.app',
         'https://zio.vercel.app',
-        /\.vercel\.app$/
+        'https://zio1.vercel.app',
+        /\.vercel\.app$/,
+        // Allow any Vercel preview deployments
+        /https:\/\/.*\.vercel\.app$/
     ],
     credentials: true, // Allow cookies and authentication headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 app.use(cors(corsOptions)); // Allow frontend requests

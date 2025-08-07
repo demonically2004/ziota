@@ -81,7 +81,7 @@ const SubjectPage = () => {
   const loadSubjectData = async () => {
     try {
       let token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       // If Firebase token is not available, try localStorage token as fallback
       if (!token) {
@@ -112,7 +112,7 @@ const SubjectPage = () => {
         }
         return;
       }
-      
+
       const response = await axios.get(`${API_BASE_URL}/api/user/subject/${subjectId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -122,9 +122,10 @@ const SubjectPage = () => {
         setSubject(data.subject);
         setFiles(data.files || []);
         setNotes(data.notes || '');
+        console.log('✅ Loaded subject data from backend:', data);
       }
     } catch (error) {
-      console.error('Failed to load subject data:', error);
+      console.error('❌ Failed to load subject data:', error);
 
       // Try to load from localStorage as fallback
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
@@ -149,20 +150,23 @@ const SubjectPage = () => {
     try {
       setIsSaving(true);
       const token = await AuthService.getFirebaseToken();
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
       if (!token) {
         console.error('❌ No valid token available for saving');
-        return;
+        return false;
       }
 
       console.log('🔄 Saving subject data:', dataToUpdate);
-      await axios.put(`${API_BASE_URL}/api/user/subject/${subjectId}`, dataToUpdate, {
+      const response = await axios.put(`${API_BASE_URL}/api/user/subject/${subjectId}`, dataToUpdate, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('✅ Subject data saved successfully');
+      console.log('✅ Subject data saved successfully:', response.data);
+      return true;
     } catch (error) {
       console.error('❌ Failed to save subject data:', error);
+      console.error('❌ Error details:', error.response?.data);
+      return false;
     } finally {
       setIsSaving(false);
     }
@@ -316,9 +320,19 @@ const SubjectPage = () => {
       }
     }
 
-    console.log('💾 Saving', newFiles.length, 'files to backend');
+    console.log('💾 Saving', newFiles.length, 'total files to backend');
     setFiles(newFiles);
-    await saveSubjectData({ files: newFiles });
+
+    const saveSuccess = await saveSubjectData({ files: newFiles });
+
+    if (saveSuccess) {
+      console.log('✅ Files uploaded and saved successfully');
+    } else {
+      console.error('❌ Failed to save files to backend');
+      // Revert files state on save failure
+      setFiles(files);
+    }
+
     setIsUploading(false);
   };
 
